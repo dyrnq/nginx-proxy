@@ -34,7 +34,7 @@ docker run \
 --name local-nginx \
 --add-host=host.docker.internal:host-gateway \
 -v ./stream.conf:/etc/nginx/conf.d/stream.conf \
-dyrnq/nginx-proxy
+dyrnq/nginx-proxy:latest
 
 
 docker rm -f local-haproxy
