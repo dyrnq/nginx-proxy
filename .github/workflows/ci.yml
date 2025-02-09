@@ -2,6 +2,10 @@ name: ci
 
 on:
   push:
+    paths-ignore:
+      - 'README.md'
+      - 'usage-demo/**'
+      - '.gitignore'
     branches:
       - 'master'
       - 'main'
