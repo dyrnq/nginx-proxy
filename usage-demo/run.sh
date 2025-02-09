@@ -26,12 +26,23 @@ stream {
 EOF
 
 
-docker rm -f np
+docker rm -f local-nginx
 docker run \
 -p 9970:80 \
 -p 9971:6001 \
 -d \
---name np \
+--name local-nginx \
 --add-host=host.docker.internal:host-gateway \
 -v ./stream.conf:/etc/nginx/conf.d/stream.conf \
 dyrnq/nginx-proxy
+
+
+docker rm -f local-haproxy
+docker run \
+-d \
+--name local-haproxy \
+--add-host=host.docker.internal:host-gateway \
+-p 9972:6001 \
+--env "PORT=6001" \
+--env "BACKEND_SERVER=host.docker.internal:6680 check,host.docker.internal:6681 check,host.docker.internal:6682" \
+dyrnq/local-haproxy:latest
