@@ -8,20 +8,18 @@ for num in {1..3}; do
     docker run -d --name "${name}" --restart always -p "${port}":80 containous/whoami:latest;
 done
 
-cat > stream.conf <<EOF
-stream {
-    upstream backends_stream {
-        zone zone_for_backends_stream 1m;
-        server host.docker.internal:6680 down max_fails=1 fail_timeout=2s;
-        server host.docker.internal:6681 down max_fails=1 fail_timeout=2s;
-        server host.docker.internal:6682 down max_fails=1 fail_timeout=2s;
-        check fall=1 rise=1 timeout=3 interval=1;
-    }
+cat > mystream.conf <<EOF
+upstream backends_stream {
+    zone zone_for_backends_stream 1m;
+    server host.docker.internal:6680 down max_fails=1 fail_timeout=2s;
+    server host.docker.internal:6681 down max_fails=1 fail_timeout=2s;
+    server host.docker.internal:6682 down max_fails=1 fail_timeout=2s;
+    check fall=1 rise=1 timeout=3 interval=1;
+}
 
-    server {
-        listen 6001;
-        proxy_pass backends_stream;
-    }
+server {
+    listen 6001;
+    proxy_pass backends_stream;
 }
 EOF
 
@@ -33,7 +31,7 @@ docker run \
 -d \
 --name local-nginx \
 --add-host=host.docker.internal:host-gateway \
--v ./stream.conf:/etc/nginx/conf.d/stream.conf \
+-v ./mystream.conf:/etc/nginx/stream.d/mystream.conf \
 dyrnq/nginx-proxy:latest
 
 
